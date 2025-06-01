@@ -37,7 +37,7 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script>```html
+        </script>
 <script type="text/javascript">
         var gk_isXlsx = false;
         var gk_xlsxFileLookup = {};
@@ -297,34 +297,33 @@
             th:nth-child(11), td:nth-child(11) {
                 min-width: 100px;
             }
-            /* Custom tooltip styles */
-    .tooltip {
-      position: relative;
-      display: inline-block;
-      cursor: pointer;
-    }
-
+        }
      #searchInputContainer {
             position: relative;
             max-width: 400px;
-            margin: 0 auto;
-            margin-bottom: 20px;
         }
 
-       #searchInput {
+       .searchInput {
             width: 100%;
-            padding: 12px 20px;
+            padding: 5px 6px;
             font-size: 16px;
             border-radius: 30px;
             border: 2px solid #ccc;
+            border-color: #1a3c6e;
+            color: #1a3c6e;
             outline: none;
             background-color: #f9f9f9;
             transition: all 0.3s ease-in-out;
         }
 
-        #searchInput:focus {
+        .searchInput:focus {
             border-color: #007bff;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .searchInput::placeholder {
+           color: #888;               /* Light gray color for placeholder */
+           font-style: italic;        /* Italic style for the placeholder text */
         }
 
 
@@ -350,8 +349,7 @@
 
     <p>Last Refresh: <span id="lastRefresh">{{ last_refresh_time }}</span></p>
     <div id="searchInputContainer">
-        <input type="text" id="searchInput" placeholder="Search for drugs..." onkeyup="filterTable()">
-
+        <input type="text" class="searchInput" id="searchInput" placeholder="Search for drugs..." onkeyup="filterTable()">
     </div>
     <div class="table-container">
         <table id="dataTable">
@@ -368,7 +366,6 @@
                     <th scope="col">Broad Tumor</th>
                     <th scope="col">Biomarker</th>
                     <th scope="col">Potential Peak Sales (Report)</th>
-                    <th scope="col"refresh>Potential Peak Sales (Report)</th>
                 </tr>
             </thead>
             <tbody>
@@ -565,4 +562,3 @@ function filterTable() {
 
 </body>
 </html>
-```
