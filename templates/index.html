@@ -1,0 +1,568 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script>```html
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDA Oncology Drug Approvals</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a3c6e;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background-color: #1a3c6e;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #2a5b9e;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #a0a0a0;
+            cursor: not-allowed;
+        }
+
+        #loading {
+            display: none;
+            font-size: 1.2rem;
+            color: #d32f2f;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #successMessage {
+            display: none;
+            font-size: 1.2rem;
+            color: #2e7d32;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Table container for scrolling */
+        .table-container {
+            max-height: 600px;
+            overflow-y: auto;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        table {
+            width: 100%;
+           # table-layout: fixed;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1a3c6e;
+            color: #fff;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            background-color: #fff;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover td {
+            background-color: #e3f2fd;
+        }
+
+        /* Wider Approved Indication column */
+        th:nth-child(5), td:nth-child(5) {
+            width: 30%;
+           # min-width: 300px;
+        }
+         /* Wider Approved Indication column */
+        th:nth-child(1), td:nth-child(1) {
+            width: 30%;
+            min-width: 100px;
+        }
+
+        /* Wider Approval Details column */
+        th:nth-child(8), td:nth-child(8) {
+            width: 50%;
+           # min-width: 500px;
+        }
+
+        /* Adjusted Potential Peak Sales (Report) column */
+        th:nth-child(11), td:nth-child(11) {
+            width: 10%;
+           # min-width: 120px;
+        }
+
+        a {
+            color: #1a3c6e;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        #lastRefresh {
+            font-weight: 500;
+            color: #1a3c6e;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .table-container {
+                max-height: 400px;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            button {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+
+            .button-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            /* Adjust column widths for smaller screens */
+            th:nth-child(5), td:nth-child(5) {
+                min-width: 200px;
+            }
+
+            th:nth-child(11), td:nth-child(11) {
+                min-width: 100px;
+            }
+            /* Custom tooltip styles */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+     #searchInputContainer {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+            margin-bottom: 20px;
+        }
+
+       #searchInput {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 30px;
+            border: 2px solid #ccc;
+            outline: none;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease-in-out;
+        }
+
+        #searchInput:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+    <h1>FDA Oncology Drug Approvals</h1>
+
+    <div id="loading">Processing... Please wait.</div>
+    <div id="successMessage">Refresh successful!</div>
+
+    <div class="button-container">
+        <button aria-label="Refresh Data" id="refreshBtn" onclick="refreshData()">Refresh</button>
+        <button id="downloadBtn" onclick="window.location.href='/download'">Download</button>
+        <button id="PendingActionsBtn" onclick="refreshAndDownload()">PDUFA Calendar</button>
+        <button id="generateSocBtn"  onclick="window.location.href='/generateSoc'">Generate SoC</button>
+        <button id="tppSalesBtn"  onclick="window.location.href='/tppPeakSales'">TPP & Peak Sales </button>
+    </div>
+
+    <p>Last Refresh: <span id="lastRefresh">{{ last_refresh_time }}</span></p>
+    <div id="searchInputContainer">
+        <input type="text" id="searchInput" placeholder="Search for drugs..." onkeyup="filterTable()">
+
+    </div>
+    <div class="table-container">
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th scope="col">Approval Date</th>
+                    <th scope="col">Drug Name</th>
+                    <th scope="col">Brand Name</th>
+                    <th scope="col">Active Ingredient</th>
+                    <th scope="col">Approved Indication</th>
+                    <th scope="col">Company Name</th>
+                    <th scope="col">Expedited Programs</th>
+                    <th scope="col">Approval Details</th>
+                    <th scope="col">Broad Tumor</th>
+                    <th scope="col">Biomarker</th>
+                    <th scope="col">Potential Peak Sales (Report)</th>
+                    <th scope="col"refresh>Potential Peak Sales (Report)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record['AA_Date'] }}</td>
+                    <td>{{ record['Drug_Name'] }}</td>
+                    <td>{{ record['Brand_Name'] }}</td>
+                    <td>{{ record['Active_Ingredient'] }}</td>
+                    <td class="tooltip">{{ record['Approved_Indication'] }}</td>
+                    <td>{{ record['Company_name'] }}</td>
+                    <td>{{ record['Relevant Expedited Programs'] }}</td>
+                    <td class="tooltip">{{ record['Approval_Details']|truncate(30, True) }}</td>
+                    <td>{{ record['Broad_Tumor'] }}</td>
+                    <td class="tooltip">{{ record['Biomarker'] }}</td>
+                    <td><a href="/static/pdfs/{{ record['pdf_link'] }}" download>Download PDF</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination">
+        <button onclick="prevPage()">Previous</button>
+        <span id="pageNumber">Page 1</span>
+        <button onclick="nextPage()">Next</button>
+    </div>
+</div>
+
+<script>
+    let currentPage = 1;
+    const rowsPerPage = 10;
+    const table = document.getElementById("dataTable");
+    const tbody = table.getElementsByTagName("tbody")[0];
+    const rows = tbody.getElementsByTagName("tr");
+    const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+
+    function showPage(page) {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].style.display = i >= start && i < end ? "table-row" : "none";
+        }
+
+        document.getElementById("pageNumber").innerText = `Page ${page} of ${totalPages} `;
+    }
+
+    function nextPage() {
+        if (currentPage * rowsPerPage < rows.length) {
+            currentPage++;
+            showPage(currentPage);
+        }
+    }
+
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    }
+
+    function checkRefreshStatus() {
+        fetch("/get_refresh_status")
+        .then(response => response.json())
+        .then(data => {
+            const buttons = document.querySelectorAll("button");
+            buttons.forEach(button => button.disabled = data.is_refreshing);
+        });
+    }
+
+    function refreshData() {
+        document.getElementById("loading").style.display = "block";
+        document.getElementById("successMessage").style.display = "none";
+
+        const buttons = document.querySelectorAll("button");
+        buttons.forEach(button => button.disabled = true);
+
+        fetch("/refresh", { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                document.getElementById("lastRefresh").innerText = data.last_refresh_time;
+                document.getElementById("successMessage").style.display = "block";
+
+                let tableBody = document.querySelector("#dataTable tbody");
+                tableBody.innerHTML = "";
+
+                data.records.forEach(record => {
+                    let row = `<tr>
+                        <td>${record.AA_Date}</td>
+                        <td>${record.Drug_Name}</td>
+                        <td>${record.Brand_Name}</td>
+                        <td>${record.Active_Ingredient}</td>
+                        <td>${record.Approved_Indication}</td>
+                        <td>${record.Company_name}</td>
+                        <td>${record.Relevant_Expedited_Programs}</td>
+                        <td>${record.Approval_Details}</td>
+                        <td>${record.Broad_Tumor}</td>
+                        <td>${record.Biomarker}</td>
+                        <td><a href="/static/pdfs/${record.pdf_link}" download>Download PDF</a></td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+
+                // Update rows reference after refreshing table
+                rows = tbody.getElementsByTagName("tr");
+                showPage(currentPage);
+            } else {
+                alert("Error refreshing data: " + data.message);
+            }
+        })
+        .finally(() => {
+            document.getElementById("loading").style.display = "none";
+            checkRefreshStatus();
+        });
+    }
+
+    function refreshAndDownload() {
+        document.getElementById("loading").style.display = "block";
+        document.getElementById("successMessage").style.display = "none";
+
+        const buttons = document.querySelectorAll("button");
+        buttons.forEach(button => button.disabled = true);
+
+        fetch("/refresh_pending_pdufa", { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                document.getElementById("lastRefresh").innerText = data.last_refresh_time;
+                document.getElementById("successMessage").style.display = "block";
+
+                const link = document.createElement("a");
+                link.href = "/static/pdfs/Pending_PDUFA_Actions.pdf";
+                link.download = "Pending_PDUFA_Actions.pdf";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        })
+        .finally(() => {
+            document.getElementById("loading").style.display = "none";
+            buttons.forEach(button => button.disabled = false);
+        });
+    }
+
+    function redirectToBlank1() {
+        window.location.href = '/blank1';
+    }
+
+    function redirectToBlank2() {
+        window.location.href = '/blank2';
+    }
+
+function truncateText(text, length) {
+    if (text.length > length) {
+        return text.substring(0, length) + '...';
+    }
+    return text;
+}
+
+document.querySelectorAll('.tooltip').forEach(function(element) {
+    const fullText = element.innerText; // Get the full text content
+    const truncatedText = truncateText(fullText, 50); // Truncate it
+
+    element.innerText = truncatedText; // Set the truncated text in the element
+    element.setAttribute('title', fullText); // Set the full text as the tooltip (hover text)
+});
+
+
+function filterTable() {
+    const searchQuery = document.getElementById("searchInput").value.toLowerCase();
+    const rows = tbody.getElementsByTagName("tr");
+
+    for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName("td");
+        let matchFound = false;
+        for (let j = 0; j < cells.length; j++) {
+            if (cells[j].textContent.toLowerCase().includes(searchQuery)) {
+                matchFound = true;
+                break;
+            }
+        }
+        rows[i].style.display = matchFound ? "" : "none";
+    }
+}
+
+
+    showPage(currentPage);
+
+</script>
+
+</body>
+</html>
+```

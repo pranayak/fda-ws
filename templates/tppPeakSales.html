@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TPP & Peak Sales</title>
+    <style>
+        /* Global body styling */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* Container for centering content */
+         .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading style */
+        h1 {
+            text-align: center;
+            color: #1a3c6e;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        /* Input container styling */
+        .input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px; /* Space between label and input */
+        }
+
+        .input-container label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+            color: #333;
+        }
+
+        .input-container input, .input-container select {
+            width: 30%;
+            padding: 2px;
+            font-size: 1rem;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            color: #333;
+            transition: border 0.3s ease;
+        }
+
+        .input-container input:focus, .input-container select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .input-container input::placeholder {
+            color: #aaa;
+        }
+
+       button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background-color: #1a3c6e;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        /* Button hover effect */
+        .button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .button {
+                font-size: 1rem;
+                padding: 12px;
+            }
+
+            .home-button {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Heading -->
+        <h1>TPP & Peak Sales</h1>
+         <a href="/" class="home-button">Home</a>
+        <!-- Drug Class input field -->
+        <div class="input-container">
+            <label for="drugClass">Drug Class:</label>
+            <input type="text" id="drugClass" placeholder="drug class..." maxlength="100" />
+        </div>
+
+        <!-- Expected Launch Month and Year input field -->
+        <div class="input-container">
+            <label for="launchDate">Expected Launch Month and Year:</label>
+            <input type="text" id="launchDate" placeholder="Launch year..." />
+        </div>
+
+        <!-- Indication input field -->
+        <div class="input-container">
+            <label for="indication">Indication:</label>
+            <input type="text" id="indication" placeholder="indication..." maxlength="100" />
+        </div>
+
+        <!-- Generate Button -->
+        <button class="button" id="generateBtn" onclick="generatePeakSales()" disabled>Generate</button>
+
+    </div>
+
+    <script>
+        // Enable the Generate button when all input fields are filled
+        function enableGenerateButton() {
+            const drugClass = document.getElementById('drugClass').value.trim();
+            const launchDate = document.getElementById('launchDate').value.trim();
+            const indication = document.getElementById('indication').value.trim();
+
+            const generateButton = document.getElementById('generateBtn');
+            generateButton.disabled = !(drugClass && launchDate && indication);
+        }
+
+        // Listen to input changes to enable the Generate button
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', enableGenerateButton);
+        });
+
+        // Function that will be called when the Generate button is clicked
+        function generatePeakSales() {
+            const drugClass = document.getElementById('drugClass').value;
+            const launchDate = document.getElementById('launchDate').value;
+            const indication = document.getElementById('indication').value;
+
+            alert(`Generating TPP & Peak Sales for:
+                Drug Class: ${drugClass}
+                Expected Launch: ${launchDate}
+                Indication: ${indication}`);
+            // Add logic here to handle the generation of TPP & Peak Sales based on the input
+        }
+    </script>
+
+</body>
+</html>

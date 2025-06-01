@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate SoC</title>
+    <style>
+        /* Global body styling */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* Container for centering content */
+         .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading style */
+        h1 {
+            text-align: center;
+            color: #1a3c6e;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+
+        /* Input container styling */
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        .input-container label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+            color: #333;
+        }
+
+        .input-container input {
+            width: 50%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            color: #333;
+            transition: border 0.3s ease;
+        }
+
+        .input-container input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .input-container input::placeholder {
+            color: #aaa;
+        }
+
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background-color: #1a3c6e;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        /* Button hover effect */
+        .button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* Button disabled state */
+        .button:disabled {
+            background-color: #bbb;
+            cursor: not-allowed;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .button {
+                font-size: 1rem;
+                padding: 12px;
+            }
+        }
+
+
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Heading -->
+        <h1>Generate SoC</h1>
+        <a href="/" class="home-button">Home</a>
+        <!-- Cancer Indication input field -->
+        <div class="input-container">
+            <label for="cancerIndication">Cancer Indication to get Current Soc</label>
+            <input
+                type="text"
+                id="cancerIndication"
+                placeholder="Enter cancer indication..."
+                maxlength="500"
+                onkeyup="enableGenerateButton()"
+            />
+        </div>
+
+        <!-- Generate SoC Button -->
+        <button class="button" id="generateSocBtn" onclick="generateSoc()" disabled>Generate SoC</button>
+    </div>
+
+    <script>
+        // Enable the Generate SoC button if input is not empty
+        function enableGenerateButton() {
+            const input = document.getElementById('cancerIndication');
+            const button = document.getElementById('generateSocBtn');
+
+            if (input.value.trim().length > 0) {
+                button.disabled = false;
+            } else {
+                button.disabled = true;
+            }
+        }
+
+        // Function that will be called when the button is clicked
+        function generateSoc() {
+            const input = document.getElementById('cancerIndication').value;
+            alert(`You are generating the SoC for: ${input}`);
+            // Add logic here to handle the generation of SoC based on the input
+        }
+    </script>
+
+</body>
+</html>
